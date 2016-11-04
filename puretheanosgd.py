@@ -31,9 +31,7 @@ class dA(object):
     def __init__(self, input=None, W=None, b=None):
 
         if not W:
-
             initial_W = np.asarray(symmetra(16), dtype=theano.config.floatX)
-            print(initial_W)
             W = theano.shared(value=initial_W, name='W', borrow=True)
 
         if not b:
@@ -47,6 +45,7 @@ class dA(object):
 
             initial_x = T.dmatrix(name='input')
             x = theano.shared(value=initial_x, name='x', borrow=True)
+
             self.x = x
 
         else:
@@ -59,10 +58,11 @@ class dA(object):
         nsamp = 10
         eps = 0.01
         delt = 0.5 - self.x
+
+
         cost =   (eps/nsamp)*T.sum(T.exp((delt * (T.dot(self.x, self.W) + self.b.reshape([1, -1])))))
         print(cost.shape)
         gparams = T.grad(cost, self.params)
-
         gparams[0]=theano.tensor.extra_ops.fill_diagonal(gparams[0], 0)
         gparams[0]=gparams[0]+gparams[0].T
 
@@ -75,7 +75,7 @@ class dA(object):
         return (cost, updates, gparams)
 
 
-def test_dA(learning_rate=0.01, training_epochs=1000,
+def test_dA(learning_rate=0.01, training_epochs=100,
             batch_size=10):
 
 
@@ -94,10 +94,9 @@ def test_dA(learning_rate=0.01, training_epochs=1000,
 
     da = dA(input=x)
 
-    ndata = datasets.shape[0]
-
+    print('test1')
     cost, updates, gparams = da.get_cost_updates(learning_rate=learning_rate)
-
+    print('test2')
     train_da = theano.function(
         [index],
         cost,
